@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Checklist Dashboard</h1>
+
+<ul>
+    {% for entry in template_data %}
+        <li>
+            <strong>{{ entry.template.name }}</strong>
+            {% if entry.today_session %}
+                - <em>Session exists today</em>
+                <a href="{% url 'checklists:session_detail' entry.today_session.id %}">View</a>
+            {% else %}
+                - <em>No session today</em>
+                <a href="{% url 'create_session' entry.template.id %}">Start Session</a>
+            {% endif %}
+        </li>
+    {% empty %}
+        <li>No checklist templates available.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

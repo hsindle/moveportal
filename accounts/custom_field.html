@@ -1,0 +1,17 @@
+{% load crispy_forms_field %}
+<div id="div_{{ field.id }}" class="mb-4">
+    <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
+        {{ field.label }}
+        {% if field.field.required %}
+            <span class="text-red-500">*</span>
+        {% endif %}
+    </label>
+    
+    {% if field.name == 'roles' %}
+        {{ field|as_widget:field.widget_attrs|add_class:"mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" }}
+    {% else %}
+        {{ field|as_widget:field.widget_attrs|add_class:"mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" }}
+    {% endif %}
+
+    {% include 'bootstrap4/layout/field_errors.html' %}
+</div>

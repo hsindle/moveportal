@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Calendar View{% endblock %}
+
+{% block content %}
+<div class="w-full py-8 px-2 sm:px-6"> 
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">📅 Venue Events Calendar</h1>
+
+    <div class="flex justify-end items-center mb-4 space-x-3">
+        <a href="{% url 'events:event_add' %}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-md text-sm">
+            + Create New Event
+        </a>
+        <a href="{% url 'events:event_list' %}" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition text-sm">
+            View Event List →
+        </a>
+    </div>
+
+    <div class="bg-white p-2 sm:p-4 rounded-xl shadow-lg border border-gray-200">
+        <div id='calendar' class="h-[600px] w-full"></div>
+    </div>
+    
+    <div id="view-controls" class="mt-4 flex justify-center space-x-3">
+        <button class="btn btn-sm btn-outline-primary" data-view="dayGridMonth">Month View</button>
+        <button class="btn btn-sm btn-outline-primary" data-view="timeGridWeek">Week View</button>
+        <button class="btn btn-sm btn-outline-primary" data-view="timeGridDay">Day View</button>
+    </div>
+    
+    <div class="mt-8">
+        <a href="{% url 'checklists:home' %}" class="inline-block px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition">
+            ← Back to Operational Hub
+        </a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: ''
+            },
+            eventDisplay: 'block', 
+            events: '{% url "events:event_list_api" %}',
+            eventClick: function(info) {
+                if (info.event.url) {
+                    window.location.href = info.event.url;
+                    return false;
+                }
+            },
+            dateClick: function(info) {
+                var dateStr = info.dateStr.split('T')[0];
+                var createUrl = '{% url "events:event_add" %}?date=' + dateStr;
+                window.location.href = createUrl;
+            },
+        });
+        calendar.render();
+
+        var controls = document.getElementById('view-controls');
+        if (controls) {
+            controls.addEventListener('click', function(e) {
+                if (e.target.matches('button')) {
+                    var viewName = e.target.getAttribute('data-view');
+                    calendar.changeView(viewName);
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

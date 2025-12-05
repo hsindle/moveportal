@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Access Denied{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-6 p-10 bg-white rounded-xl shadow-2xl border-t-4 border-red-600">
+        
+        <h2 class="text-3xl font-extrabold text-red-700 text-center">
+            🔒 Account Pending Authorization
+        </h2>
+        <p class="text-lg text-gray-700 text-center">
+            Thank you for registering, **{{ request.user.get_full_name }}**.
+        </p>
+        
+        <div class="p-4 bg-yellow-50 rounded-md border border-yellow-300">
+            <p class="font-medium text-yellow-800">
+                Your account is currently **pending manager review**. You will not be able to access the operational portal until a manager verifies your details and assigns your staff role.
+            </p>
+        </div>
+        
+        <div class="text-center pt-4">
+            <a href="{% url 'logout' %}" 
+               class="inline-block py-2 px-4 rounded-md text-sm font-medium text-white bg-gray-700 hover:bg-gray-800 transition">
+                Log Out
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.name }} Detail{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8">
+    
+    <div class="flex justify-between items-center mb-6 border-b pb-3">
+        <h1 class="text-3xl font-bold text-gray-800">{{ event.name }}</h1>
+        <div>
+            <a href="{% url 'events:event_list' %}" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+                ← Back to Event List
+            </a>
+        </div>
+    </div>
+
+    <div class="space-y-6">
+        
+        <div class="p-4 bg-white shadow-lg rounded-lg">
+            <h2 class="text-xl font-semibold mb-3">Schedule</h2>
+            <p><strong>Category:</strong> {{ event.category.name|default:"N/A" }}</p> 
+            <p><strong>Starts:</strong> {{ event.start_date|date:"l, M j, Y H:i" }}</p>
+            <p><strong>Ends:</strong> {{ event.end_date|date:"l, M j, Y H:i"|default:"TBD" }}</p>
+            <p><strong>Status:</strong> {% if event.is_active %}Active{% else %}Inactive{% endif %}</p>
+        </div>
+
+        <div class="p-4 bg-white shadow-lg rounded-lg border-l-4 border-info">
+            <h2 class="text-xl font-semibold mb-3">Promoter Contact</h2>
+            {% if event.promoter %}
+                <p><strong>Name:</strong> {{ event.promoter.name }}</p>
+                <p><strong>Email:</strong> {{ event.promoter.email|default:"N/A" }}</p>
+                <p><strong>Phone:</strong> {{ event.promoter.phone|default:"N/A" }}</p>
+            {% else %}
+                <p class="text-gray-500">No specific promoter assigned.</p>
+            {% endif %}
+        </div>
+        
+        <div class="p-4 bg-white shadow-lg rounded-lg border-l-4 border-success">
+            <h2 class="text-xl font-semibold mb-3">Team Assigned</h2>
+            <p class="text-sm">
+                {% for user in event.team.all %}
+                    {{ user.get_full_name }}{% if not forloop.last %}, {% endif %}
+                {% empty %}
+                    No staff assigned.
+                {% endfor %}
+            </p>
+        </div>
+
+        <div class="p-4 bg-white shadow-lg rounded-lg border-l-4 border-warning">
+            <h2 class="text-xl font-semibold mb-3">Logistics & Files</h2>
+            <p class="mb-2"><strong>EPK Link:</strong> 
+                {% if event.epk_link %}<a href="{{ event.epk_link }}" target="_blank" class="text-blue-600 hover:underline">View Link</a>{% else %}N/A{% endif %}</p>
+            <p class="mb-2"><strong>Hospitality Rider:</strong> {{ event.hospitality_rider|linebreaksbr|default:"None provided." }}</p>
+            <p class="mb-2"><strong>Technical Rider:</strong> {{ event.technical_rider|linebreaksbr|default:"None provided." }}</p>
+        </div>
+        
+        <div class="p-4 bg-white shadow-lg rounded-lg border-l-4 border-primary">
+            <h2 class="text-xl font-semibold mb-3">Event Artwork ({{ event.artwork.count }})</h2>
+            {% for item in event.artwork.all %}
+                <p class="text-sm">
+                    — {{ item.title }}
+                </p>
+            {% empty %}
+                <p class="text-gray-500 text-sm">No artwork files attached.</p>
+            {% endfor %}
+            <p class="mt-3 text-sm"><a href="#" class="text-indigo-600 hover:underline">Upload Artwork →</a> (Future Feature)</p>
+        </div>
+        
+        <div class="p-4 bg-gray-100 rounded-lg">
+            <h2 class="text-lg font-semibold">Internal Notes</h2>
+            <p class="text-gray-700">{{ event.notes|linebreaksbr|default:"None." }}</p>
+        </div>
+
+    </div>
+    
+    <div class="mt-6 pt-4 flex justify-end space-x-4 border-t border-gray-300">
+        <a href="{% url 'events:event_edit' event.id %}" class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-md">
+            Edit Event Details
+        </a>
+        <a href="{% url 'events:event_delete' event.id %}" class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition shadow-md">
+            Delete Event
+        </a>
+    </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load user_groups %} 
+{% load static %}
+
+{% block title %}Operational Hub{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto py-8">
+    
+    <h1 class="text-3xl font-bold mb-8 text-gray-800">
+        Welcome, {{ request.user.get_full_name|default:request.user.username }}!
+    </h1>
+
+    <div class="mb-8 flex flex-col sm:flex-row justify-end items-center sm:space-x-3 space-y-3 sm:space-y-0">
+        
+        {% if request.user|has_group:"Manager,Supervisor,Security" %}
+        <a href="{% url 'checklists:log_incident' %}"
+           class="w-full sm:w-auto px-4 py-2 bg-red-600 text-white font-medium rounded-lg shadow-md hover:bg-red-700 transition text-center">
+            Log New Incident 🚨
+        </a>
+        {% endif %}
+
+        {% if request.user|has_group:"Manager,Supervisor,Security" %}
+        <a href="{% url 'checklists:log_maintenance' %}"
+           class="w-full sm:w-auto px-4 py-2 bg-yellow-600 text-white font-medium rounded-lg shadow-md hover:bg-yellow-700 transition text-center">
+            Log New Maintenance 🛠️
+        </a>
+        {% endif %}
+
+        {% if request.user|has_group:"Manager,Supervisor" %}
+        <a href="{% url 'manager_dashboard' %}"
+           class="w-full sm:w-auto px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow-md hover:bg-indigo-700 transition text-center">
+            Go to Management Dashboard →
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        {% if request.user|has_group:"Manager,Supervisor,Bartender,Security" %}
+        <a href="{% url 'checklists:daily_view_content' %}" 
+           class="bg-white p-6 rounded-xl shadow-lg border-b-4 border-green-600 hover:shadow-xl transition duration-300">
+            <div class="text-3xl mb-3 text-green-600">✅</div>
+            <h2 class="text-xl font-bold mb-1 text-gray-800">Daily Checklists</h2>
+            <p class="text-sm text-gray-500">View and complete opening & closing duties for your shift.</p>
+        </a>
+        {% endif %}
+
+        {% if request.user|has_group:"Manager,Supervisor,Bartender" %}
+        <a href="{% url 'rota:rota_view' %}" 
+           class="bg-white p-6 rounded-xl shadow-lg border-b-4 border-blue-600 hover:shadow-xl transition duration-300">
+            <div class="text-3xl mb-3 text-blue-600">📅</div>
+            <h2 class="text-xl font-bold mb-1 text-gray-800">Rota / Schedule</h2>
+            <p class="text-sm text-gray-500">View upcoming shifts and team availability.</p>
+        </a>
+        {% endif %}
+
+        {% if request.user|has_group:"Security,Manager,Supervisor,Bartender" %}
+        <a href="{% url 'training:training_dashboard' %}" 
+           class="bg-white p-6 rounded-xl shadow-lg border-b-4 border-yellow-600 hover:shadow-xl transition duration-300">
+            <div class="text-3xl mb-3 text-yellow-600">📚</div>
+            <h2 class="text-xl font-bold mb-1 text-gray-800">Training & Docs</h2>
+            <p class="text-sm text-gray-500">Access required training modules and compliance documents.</p>
+        </a>
+        {% endif %}
+        
+        {% if request.user|has_group:"Manager,Supervisor" %}
+        <a href="{% url 'events:event_calendar' %}"
+           class="bg-white p-6 rounded-xl shadow-lg border-b-4 border-indigo-600 hover:shadow-xl transition duration-300">
+            <div class="text-3xl mb-3 text-indigo-600">⏰</div>
+            <h2 class="text-xl font-bold mb-1 text-gray-800">Event Management</h2>
+            <p class="text-sm text-gray-500">View and manage the venue calendar.</p>
+        </a>
+        {% endif %}
+        
+        {% if request.user.groups.all.0.name == 'Unauthorized' %}
+        <div class="col-span-full p-6 bg-red-50 rounded-xl shadow-lg border-b-4 border-red-600">
+            <h2 class="text-xl font-bold mb-1 text-red-700">🚨 ACCOUNT PENDING 🚨</h2>
+            <p class="text-sm text-red-500">Your account requires manager authorization before you can access all features.</p>
+        </div>
+        {% endif %}
+
+    </div>
+    </div>
+{% endblock %}

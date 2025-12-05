@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load static %} 
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8">
+    
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">{{ page_title }}</h1>
+    
+    {% if form.non_field_errors %}
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" novalidate class="space-y-6">
+        {% csrf_token %}
+        
+        <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-primary">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800">Event Details & Schedule</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-group">{{ form.name.label_tag }} {{ form.name }}</div>
+                <div class="form-group">{{ form.category.label_tag }} {{ form.category }}</div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 p-4 border-b pb-4 border-gray-100">
+                <p class="text-sm font-semibold text-gray-600 col-span-full">Create New Category (If needed):</p>
+                <div class="form-group">{{ form.new_category_name.label_tag }} {{ form.new_category_name }}</div>
+                <div class="form-group">{{ form.new_category_color.label_tag }} {{ form.new_category_color }}</div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div class="form-group">{{ form.start_date.label_tag }} {{ form.start_date }}</div>
+                <div class="form-group">{{ form.end_date.label_tag }} {{ form.end_date }}</div>
+            </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-info">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800">Promoter & Team</h3>
+            
+            <div class="form-group mb-4">
+                {{ form.promoter.label_tag }} {{ form.promoter }}
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4 p-4 border-b pb-4 border-gray-100">
+                 <p class="text-sm font-semibold text-gray-600 col-span-full">Or Create New Promoter:</p>
+                <div class="form-group">{{ form.new_promoter_name.label_tag }} {{ form.new_promoter_name }}</div>
+                <div class="form-group">{{ form.new_promoter_email.label_tag }} {{ form.new_promoter_email }}</div>
+                <div class="form-group">{{ form.new_promoter_phone.label_tag }} {{ form.new_promoter_phone }}</div>
+            </div>
+            
+            <div class="mt-4 form-group">
+                {{ form.team.label_tag }} {{ form.team }}
+            </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-warning">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800">Riders & Files</h3>
+            
+            <div class="form-group">{{ form.epk_link.label_tag }} {{ form.epk_link }}</div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                <div class="form-group">{{ form.hospitality_rider.label_tag }} {{ form.hospitality_rider }}</div>
+                <div class="form-group">{{ form.technical_rider.label_tag }} {{ form.technical_rider }}</div>
+            </div>
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-success">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800">Notes & Status</h3>
+            
+            <div class="form-group">{{ form.notes.label_tag }} {{ form.notes }}</div>
+            
+            <div class="form-group flex items-center mt-4">
+                {{ form.is_active }}
+                <label for="{{ form.is_active.id_for_label }}" class="ml-2">{{ form.is_active.label }}</label>
+                <small class="text-gray-500 ml-4">{{ form.is_active.help_text }}</small>
+            </div>
+        </div>
+
+        
+        <div class="flex justify-between items-center pt-4 border-t border-gray-300">
+            
+            <div class="flex space-x-3">
+                <button type="submit" 
+                        class="py-2 px-6 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition shadow-md">
+                    Save Event
+                </button>
+                
+                <a href="{% url 'events:event_list' %}" 
+                   class="py-2 px-6 bg-gray-200 text-gray-700 font-medium rounded-md hover:bg-gray-300 transition shadow-md">
+                    Cancel
+                </a>
+            </div>
+            
+            {% if event %} 
+            <a href="{% url 'events:event_delete' event.id %}" 
+               class="py-2 px-6 bg-red-600 text-white font-medium rounded-md hover:bg-red-700 transition shadow-md">
+                Delete Event
+            </a>
+            {% endif %}
+
+        </div>
+        
+    </form>
+</div>
+
+<style>
+    /* Styling for the input fields to match the professional aesthetic */
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #4a5568; /* gray-700 */
+    }
+    .form-group input, .form-group textarea, .form-group select {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #e2e8f0; /* gray-200 */
+        border-radius: 0.375rem; /* rounded-md */
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+        border-color: #4338ca; /* indigo-600 focus */
+        box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.2);
+        outline: none;
+    }
+</style>
+{% endblock %}

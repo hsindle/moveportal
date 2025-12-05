@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">✍️ {{ page_title }}</h1>
+    
+    {% if messages %}
+        {% for message in messages %}
+        <div class="p-3 rounded-md bg-green-100 text-green-800 mb-4">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-primary mb-6">
+            <h2 class="text-xl font-semibold mb-4">Module Setup</h2>
+            {{ course_form|crispy }}
+        </div>
+        
+        <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-danger">
+            <h2 class="text-xl font-semibold mb-4 text-red-700">Quiz Questions (Min: 1)</h2>
+            
+            {{ formset.management_form }}
+            
+            <div id="formset-container" class="space-y-4">
+                {% for form in formset %}
+                <div class="p-4 border border-gray-200 rounded-lg" id="question-form-{{ forloop.counter0 }}">
+                    <h3 class="text-lg font-medium mb-3 text-indigo-700">Question {{ forloop.counter }}</h3>
+                    
+                    {% if form.instance.pk %}
+                        {{ form.id }}
+                    {% endif %}
+                    
+                    {{ form.text|as_crispy_field }}
+                    
+                    <h4 class="text-md font-medium mt-4 mb-2">Answers and Correct Choice</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        {{ form.option_a|as_crispy_field }}
+                        {{ form.option_b|as_crispy_field }}
+                        {{ form.option_c|as_crispy_field }}
+                        {{ form.option_d|as_crispy_field }}
+                    </div>
+                    
+                    {{ form.correct_answer|as_crispy_field }}
+                    
+                    {% if formset.can_delete %}
+                        <div class="text-right mt-2">{{ form.DELETE }} <label for="{{ form.DELETE.id_for_label }}" class="text-red-500">Delete Question</label></div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            
+            <a href="#" class="text-indigo-600 hover:text-indigo-900 mt-4 block" id="add-question">
+                + Add Another Question
+            </a>
+        </div>
+        
+        <div class="mt-6 flex justify-end">
+            <button type="submit" class="px-6 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition shadow-lg">
+                Save Course & Quiz
+            </button>
+        </div>
+    </form>
+
+    <div class="mt-6">
+        <a href="{% url 'training:manager_training_list' %}" class="inline-block px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition">
+            ← Back to Course List
+        </a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var formsetContainer = document.getElementById('formset-container');
+        var totalFormsInput = document.getElementById('id_question_set-TOTAL_FORMS');
+        var emptyFormPrototype = formsetContainer.querySelector('[id^="question-form-"]:last-of-type').cloneNode(true);
+
+        // Helper function to update form indexes and ensure correct naming
+        function updateFormIndexes() {
+            var totalForms = formsetContainer.children.length;
+            totalFormsInput.value = totalForms;
+
+            Array.from(formsetContainer.children).forEach(function(row, index) {
+                row.id = `question-form-${index}`;
+                row.querySelector('h3').innerText = `Question ${index + 1}`;
+
+                // Update names and IDs of fields inside the row
+                row.querySelectorAll('[name^="question_set-"], [id^="id_question_set-"]').forEach(function(element) {
+                    if (element.name) {
+                        element.name = element.name.replace(/-\d+-/g, `-${index}-`);
+                    }
+                    if (element.id) {
+                        element.id = element.id.replace(/-\d+-/g, `-${index}-`);
+                    }
+                });
+            });
+        }
+        
+        // Function to clone and prepare a new formset row
+        function cloneAndClearForm(prototype) {
+            var newForm = prototype.cloneNode(true);
+            
+            // Clear values, uncheck DELETE checkbox, and remove PK if it exists
+            newForm.querySelectorAll('input, textarea, select').forEach(function(input) {
+                if (input.name.indexOf('DELETE') === -1) {
+                    if (input.type === 'checkbox' || input.type === 'radio') {
+                        input.checked = false;
+                    } else if (input.name.indexOf('-id') > -1) {
+                        // Clear the primary key field for new forms
+                        input.value = '';
+                    } else {
+                        input.value = '';
+                    }
+                }
+            });
+            
+            // Uncheck the DELETE checkbox if it exists
+            var deleteCheckbox = newForm.querySelector('input[type="checkbox"][id*="DELETE"]');
+            if (deleteCheckbox) {
+                deleteCheckbox.checked = false;
+            }
+
+            return newForm;
+        }
+
+        document.getElementById('add-question').addEventListener('click', function(e) {
+            e.preventDefault();
+            var newForm = cloneAndClearForm(emptyFormPrototype);
+            
+            formsetContainer.appendChild(newForm);
+            updateFormIndexes();
+        });
+        
+        // Initial setup: ensure existing forms are indexed correctly
+        updateFormIndexes();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ session.template.name }} - {{ session.shift_name }} ({{ session.date }})</h2>
+
+<table class="table-auto border-collapse border border-gray-300 w-full mt-4">
+    <thead>
+        <tr>
+            <th class="border px-4 py-2">Item</th>
+            <th class="border px-4 py-2">Status</th>
+            <th class="border px-4 py-2">Performed By</th>
+            <th class="border px-4 py-2">Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for r in responses %}
+        <tr>
+            <td class="border px-4 py-2">{{ r.item.name }}</td>
+            <td class="border px-4 py-2">{% if r.status == "done" %}✅ Done{% else %}⏳ Pending{% endif %}</td>
+            <td class="border px-4 py-2">{{ r.performed_by.get_full_name|default:r.performed_by.username }}</td>
+            <td class="border px-4 py-2">{{ r.performed_at }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" class="border px-4 py-2 text-center text-gray-500">No responses recorded yet</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'checklists:history_dashboard' %}" class="mt-4 inline-block px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800">
+    Back to History
+</a>
+{% endblock %}

@@ -1,0 +1,17 @@
+<!-- C:/Users/harry/nightclub_system/templates/portal/home.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Open Checklist Sessions</h1>
+<ul>
+    {% for session in sessions %}
+    <li>
+        <a href="{% url 'checklists:session_detail' session.id %}">
+            {{ session.template.name }} - {{ session.shift_name }} ({{ session.date }})
+        </a>
+    </li>
+    {% empty %}
+    <li>No sessions available.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

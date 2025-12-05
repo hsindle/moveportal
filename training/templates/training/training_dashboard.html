@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Training Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">📚 Required Training Modules</h1>
+    
+    {% if onboarding_needed %}
+    <div class="p-4 rounded-lg shadow-md mb-6 bg-red-100 border border-red-400">
+        <h3 class="text-lg font-bold text-red-800 mb-2">ACTION REQUIRED: Onboarding Document</h3>
+        <p class="text-sm text-red-700 mb-3">
+            You must complete your required HR and financial documentation before accessing most features.
+        </p>
+        <a href="{% url 'training:onboarding_start' %}" 
+           class="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition shadow-md text-sm">
+            Start Onboarding Document →
+        </a>
+    </div>
+    {% endif %}
+    <p class="text-gray-600 mb-6">Your role requires completion of the following compliance and training modules.</p>
+
+    <div class="space-y-4">
+        
+        {% for data in courses_data %}
+        {% with course=data.course is_completed=data.is_completed %}
+        
+        <div class="p-4 rounded-lg shadow-md flex justify-between items-center 
+             {% if is_completed %} bg-green-50 border border-green-400
+             {% else %} bg-yellow-50 border border-yellow-400 {% endif %}">
+
+            <div>
+                <h2 class="text-lg font-semibold {% if is_completed %}text-green-800{% else %}text-gray-800{% endif %}">
+                    {{ course.title }}
+                </h2>
+                <p class="text-sm text-gray-600">
+                    Required for: {{ course.required_for_groups.all|join:", " }}
+                </p>
+                {% if course.is_recurring %}
+                    <span class="text-xs text-red-600 font-medium"> (Recurring/Annual)</span>
+                {% endif %}
+            </div>
+
+            <div class="text-right">
+                {% if is_completed %}
+                    <span class="px-3 py-1 rounded-full text-sm font-bold bg-green-600 text-white">
+                        Completed
+                    </span>
+                    {% if data.latest_attempt %}
+                        <p class="text-xs text-gray-500 mt-1">Last passed: {{ data.latest_attempt.date_completed|date:"M j, Y" }}</p>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'training:course_detail' course.id %}" 
+                       class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition shadow-md text-sm">
+                        Start Module
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% endwith %}
+        {% empty %}
+        <p class="text-gray-500 p-4 bg-white rounded-lg shadow-md">No required training modules found for your current role(s).</p>
+        {% endfor %}
+        
+    </div>
+
+    <div class="mt-8">
+        <a href="{% url 'checklists:home' %}" class="inline-block px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition">
+            ← Back to Operational Hub
+        </a>
+    </div>
+</div>
+{% endblock %}

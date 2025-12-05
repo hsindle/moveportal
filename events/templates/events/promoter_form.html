@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">{{ page_title }}</h1>
+    
+    <div class="p-6 bg-white shadow-lg rounded-lg border-t-4 border-indigo-600">
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="mt-4 flex justify-end">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

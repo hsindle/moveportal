@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Confirm Deletion{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-6 text-red-600">Confirm Shift Deletion</h1>
+    
+    <div class="p-6 bg-white shadow-lg rounded-lg border border-red-200">
+        <p class="text-lg mb-4">Are you sure you want to delete the following shift?</p>
+        
+        <p class="mb-2"><strong>Staff Member:</strong> {{ shift.user.get_full_name }}</p>
+        <p class="mb-2"><strong>Date:</strong> {{ shift.operational_date }}</p>
+        <p class="mb-4"><strong>Time:</strong> {{ shift.start_time }} - {{ shift.end_time }}</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition">
+                Yes, Delete This Shift
+            </button>
+            <a href="{% url 'rota:shift_edit' shift.id %}" class="ml-4 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 transition">
+                Cancel
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}
