@@ -1,0 +1,22 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+*.pylint
+
+# Environments
+venv/
+env/
+.env
+
+# Django files
+*.log
+*.pot
+*.mo
+*.prof
+staticfiles/ 
+local_settings.py 
+
+# Database files
+db.sqlite3
