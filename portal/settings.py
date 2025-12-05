@@ -95,7 +95,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'moveportal_db',
         'USER': 'moveportal_user',
-        'PASSWORD': '@Ionos123!',
+        'PASSWORD': 'Ionos1234',
         'HOST': 'localhost',
         'PORT': '5432',
     }
