@@ -14,19 +14,20 @@
             {% if course.video_url %}
             <div class="relative overflow-hidden w-full rounded-lg">
                 <iframe id="training-video-iframe"
-                        class="w-full h-96" 
-                        src="{{ course.video_url }}" 
-                        frameborder="0" 
-                        allowfullscreen 
-                        allow="autoplay; encrypted-media">
+                        class="w-full h-96"
+                        src="{{ course.video_url|replace:'watch?v=','embed/'|slice:':-1' }}"
+                        title="Training video"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
                 </iframe>
             </div>
-            
             {% else %}
             <div class="p-6 text-center text-gray-500 border border-dashed rounded-lg">
                 Video content link is missing.
             </div>
             {% endif %}
+
             
             <p class="mt-4 text-gray-600">{{ course.description|default:"No module description provided." }}</p>
         </div>
