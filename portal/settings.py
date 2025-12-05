@@ -4,35 +4,42 @@ Django settings for portal project.
 
 from pathlib import Path
 import os
-# Required for PostgreSQL connection URL parsing
-import dj_database_url 
+import dj_database_url  # Only needed if you plan to use DATABASE_URL for PostgreSQL
 
-SECURE_SSL_REDIRECT = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# --- BASE DIRECTORY ---
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# --- FILE SERVING PATHS ---
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Nginx serves from here
+# --- SECURITY & DEBUG ---
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-wb!79r+-uss=lo)jfuei)3us7f&jj_*^-%r#yvw64w@_x358ui'
+)
+DEBUG = False
+ALLOWED_HOSTS = [
+    'moveandbomba.com',
+    'www.moveandbomba.com',
+    '87.106.203.42',  # VPS IP
+    'localhost',
+    '127.0.0.1',
+]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'        # User uploaded files (Right to Work proof, etc.)
+# --- SSL / HTTPS SETTINGS ---
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = [
+    'https://moveandbomba.com',
+    'https://www.moveandbomba.com'
+]
 
-
-# --- CORE SECURITY & DEBUGGING ---
-# SECURITY WARNING: DON'T run with debug turned on in production!
-DEBUG = False 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-wb!79r+-uss=lo)jfuei)3us7f&jj_*^-%r#yvw64w@_x358ui')
-ALLOWED_HOSTS = ['moveandbomba.com', 'www.moveandbomba.com', '87.106.203.42', 'localhost']
-
-
+# --- AUTHENTICATION ---
 AUTH_USER_MODEL = 'accounts.CustomUser'
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 
-
-# Application definition
-
+# --- APPLICATION DEFINITION ---
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -40,18 +47,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'crispy_bootstrap4',
+    'crispy_forms',
 
-    'crispy_forms',  # for nice forms
-
-    # Your apps
     'accounts',
     'checklists',
     'rota',
     'events',
     'training',
 ]
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -83,74 +88,47 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'portal.wsgi.application'
 
-
 # --- DATABASE CONFIGURATION ---
-
-# In production, this should be PostgreSQL. 
-# You should update this to your PostgreSQL credentials on the VPS.
-# EXAMPLE POSTGRES CONFIGURATION (Replace placeholders):
-#DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'nightclub_db', # Name you created
-#         'USER': 'nightclub_user', # User you created
-#        'PASSWORD': 'Bluecat3033!', 
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-     }
- }
-
+# Using SQLite for simplicity. For production, switch to PostgreSQL.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-# Password validation
+
+# Example PostgreSQL configuration:
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default='postgres://USER:PASSWORD@localhost:5432/nightclub_db',
+#         conn_max_age=600
+#     )
+# }
+
+# --- PASSWORD VALIDATION ---
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
-
-# Internationalization
+# --- INTERNATIONALIZATION ---
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+# --- STATIC & MEDIA FILES ---
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Nginx serves from here
 
-# Default primary key field type
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
-
-# --- AUTHENTICATION AND SECURITY ---
-LOGIN_URL = '/accounts/login/' 
-# 🚨 FIX: Redirect to the bare root path (/) 🚨
-LOGIN_REDIRECT_URL = '/' 
-LOGOUT_REDIRECT_URL = '/accounts/login/'
-
-# 🚨 CRITICAL SSL/HTTPS FIX 🚨
-# These settings resolve the ERR_TOO_MANY_REDIRECTS loop when Nginx handles SSL.
-SECURE_SSL_REDIRECT = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-CSRF_TRUSTED_ORIGINS = ['https://yourdomain.com', 'https://www.yourdomain.com'] # Add HTTPS domains
-
-# Ensure session cookies are secure
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-
-
-# CRISPY FORMS SETTINGS
-CRISPY_ALLOWED_TEMPLATE_PACKS = ('bootstrap4', 'bootstrap5',) 
+# --- CRISPY FORMS ---
+CRISPY_ALLOWED_TEMPLATE_PACKS = ('bootstrap4', 'bootstrap5',)
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# --- DEFAULT AUTO FIELD ---
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
