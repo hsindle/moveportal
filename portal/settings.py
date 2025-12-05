@@ -92,18 +92,14 @@ WSGI_APPLICATION = 'portal.wsgi.application'
 # Using SQLite for simplicity. For production, switch to PostgreSQL.
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'moveportal_db',
+        'USER': 'moveportal_user',
+        'PASSWORD': '@Ionos123!',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
-
-# Example PostgreSQL configuration:
-# DATABASES = {
-#     'default': dj_database_url.config(
-#         default='postgres://USER:PASSWORD@localhost:5432/nightclub_db',
-#         conn_max_age=600
-#     )
-# }
 
 # --- PASSWORD VALIDATION ---
 AUTH_PASSWORD_VALIDATORS = [
